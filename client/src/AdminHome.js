@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import './AdminHome.css';
 import { useAuth } from './AuthContext';
+import { BASE_URL } from './App';
 
 const AdminHome = () => {
   const [announcementText, setAnnouncementText] = useState('');
@@ -14,7 +15,7 @@ const AdminHome = () => {
 
   const fetchAnnouncements = async () => {
     try {
-      const response = await axios.get('http://localhost:5000/announcements');
+      const response = await axios.get(`${BASE_URL}/announcements`);
       setAnnouncements(response.data);
     } catch (error) {
       console.error('Error fetching announcements:', error);
@@ -24,7 +25,7 @@ const AdminHome = () => {
 
   const handleAnnouncementSubmit = async () => {
     try {
-      await axios.post('http://localhost:5000/announcement', { message: announcementText });
+      await axios.post(`${BASE_URL}/announcement`, { message: announcementText });
       setAnnouncementText('');
       fetchAnnouncements();
     } catch (error) {
@@ -35,7 +36,7 @@ const AdminHome = () => {
   const handleDeleteAnnouncement = async (id) => {
     if (window.confirm('Are you sure you want to delete this announcement?')) {
       try {
-        const response = await axios.delete(`http://localhost:5000/announcement/${id}`);
+        const response = await axios.delete(`${BASE_URL}/announcement/${id}`);
         if (response.status === 200) {
           alert('Announcement deleted successfully');
           // Refresh the announcements list
@@ -55,7 +56,7 @@ const AdminHome = () => {
   const handleReset = async () => {
     if (window.confirm('Are you sure you want to reset the semester? This action cannot be undone.')) {
       try {
-        await axios.post('http://localhost:5000/admin/reset');
+        await axios.post(`${BASE_URL}/admin/reset`);
         alert('Reset successful');
         fetchAnnouncements();
       } catch (error) {

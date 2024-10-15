@@ -4,6 +4,7 @@ import './Profile.css';
 import axios from 'axios';
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
+import { BASE_URL } from './App';
 
 const Profile = () => {
   const [selectedFile, setSelectedFile] = useState(null);
@@ -20,7 +21,7 @@ const Profile = () => {
     formData.append('pdfFile', selectedFile);
     formData.append('userId', user.id); // Adjust according to where user id is stored
 
-    axios.post('http://localhost:5000/uploadPdf', formData, {
+    axios.post(`${BASE_URL}/uploadPdf`, formData, {
       headers: {
         'Content-Type': 'multipart/form-data'
       }
