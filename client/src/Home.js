@@ -1,6 +1,7 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect,  } from 'react';
 import axios from 'axios';
 import './Home.css'; // Ensure your CSS file is imported
+import { useNavigate } from 'react-router-dom'; 
 
 const Home = () => {
   const [announcements, setAnnouncements] = useState([]);
@@ -19,29 +20,59 @@ const Home = () => {
     }
   };
 
+  const GoToFormButton = () => {
+    const navigate = useNavigate();
+
+  const navigateToForm = () => {
+    navigate('/form');  // Navigates to /form page
+  };
+  
+    return (
+      <button className="go-to-form-button" onClick={navigateToForm}>
+        Register or Waive Exam
+      </button>
+    );
+  };
+
+
   return (
     <div className="home-container">
-      <div className="notifications-container">
-        <h2>Notifications/Announcements</h2>
-        <ul>
-          {announcements.map((announcement) => (
-            <li key={announcement._id}>{announcement.message}</li>
-          ))}
-        </ul>
+      <div className="left-container">
+        <div className="notifications-container">
+          <h2 style={{ textAlign: 'center' }}>Home Page</h2>
+          <p style={{ textAlign: 'center' }}> You have not signed up to register or waive the exam.  </p>
+          <ul>
+            {announcements.map((announcement) => (
+              <li key={announcement._id}>{announcement.message}</li>
+            ))}
+          </ul>
+          <GoToFormButton/> 
+          <p style={{ textAlign: 'center' }}> Complete by [].  </p> 
+        </div>
       </div>
-      <div className="calendar-container">
-        <iframe 
-          src="https://calendar.google.com/calendar/embed?src=shadowkaan08%40gmail.com&ctz=America%2FNew_York" 
-          style={{ border: 0 }} 
-          width="800" 
-          height="600" 
-          frameBorder="0" 
-          scrolling="no"
-          title="Google Calendar">
-        </iframe>
-      </div>
+
+      <div className="right-container">
+      <h3>To Do: </h3>
+      <ul>
+        <li>
+          <input type="checkbox" id="task1" />
+          <label htmlFor="task1"> Register or waive exam</label>
+        </li>
+        <li>
+          <input type="checkbox" id="task2" />
+          <label htmlFor="task2"> Upload document</label>
+        </li>
+        <li>
+          <input type="checkbox" id="task3" />
+          <label htmlFor="task3"> Present</label>
+        </li>
+
+      </ul>
+    </div>
+
     </div>
   );
 };
+
 
 export default Home;
