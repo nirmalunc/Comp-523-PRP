@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import { useAuth } from './AuthContext';
 import './Form.css';
+import { BASE_URL } from './App';
 
 function Form() {
     const { user, updateFormData, updateWaiveOption } = useAuth();
@@ -50,10 +51,10 @@ function Form() {
   const handleFormSubmit = async (event) => {
   event.preventDefault();
   try {
-      await axios.post('http://localhost:5000/saveFormData', { userId: user.id, formData }); //Post to Database
+      await axios.post(`${BASE_URL}/saveFormData`, { userId: user.id, formData }); //Post to Database
       updateFormData(formData); //Update user context of formData
       setIsReadOnly(true); // Make fields read-only after saving
-      await axios.post('http://localhost:5000/saveWaiveOption', { userId: user.id, waive: waiverOption === 'waiver' ? 'yes' : 'no' }); // Post to Database
+      await axios.post(`${BASE_URL}`, { userId: user.id, waive: waiverOption === 'waiver' ? 'yes' : 'no' }); // Post to Database
       updateWaiveOption(waiverOption === 'waiver' ? 'yes' : 'no' ); //Update user context of waiveOption
       console.log('Form data saved successfully');
   } catch (error) {

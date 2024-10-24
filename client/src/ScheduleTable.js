@@ -1,6 +1,7 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom'; // Import useNavigate
 import './ScheduleTable.css';
+import { BASE_URL } from './App';
 
 function ScheduleTable({ users }) {
     const navigate = useNavigate();
@@ -27,7 +28,7 @@ function ScheduleTable({ users }) {
                         <td>{[user.schedulingData.date," ", user.schedulingData.time]}</td>
                         <td>{user.formData.name}</td><td>
                             {user.pdfFileUrl ? (
-                                <a href={`http://localhost:5000${user.pdfFileUrl}`} target="_blank" rel="noopener noreferrer">
+                                <a href={`${BASE_URL}${user.pdfFileUrl}`} target="_blank" rel="noopener noreferrer">
                                     {user.formData.titleOfPRPTopic}
                                 </a>
                             ) : (

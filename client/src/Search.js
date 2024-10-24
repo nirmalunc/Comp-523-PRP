@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useLocation } from 'react-router-dom'; // Import useLocation
 import axios from 'axios';
 import './Search.css';
+import { BASE_URL } from './App';
 
 function Search() {
   const location = useLocation(); // Access the location object
@@ -24,7 +25,7 @@ function Search() {
   const handleSearchSubmit = async (event) => {
     event.preventDefault();
     try {
-      const response = await axios.get(`http://localhost:5000/search?name=${searchQuery}`);
+      const response = await axios.get(`${BASE_URL}/search?name=${searchQuery}`);
       setSearchResults(response.data.sort((a, b) => a.username.localeCompare(b.username)));
       setSelectedUser(null);
     } catch (error) {
@@ -34,7 +35,7 @@ function Search() {
 
   const handleUserClick = async (userId) => {
     try {
-      const response = await axios.get(`http://localhost:5000/userData?userId=${userId}`);
+      const response = await axios.get(`${BASE_URL}/userData?userId=${userId}`);
       setSelectedUser(response.data);
     } catch (error) {
       console.error('Error fetching user data:', error);
@@ -50,7 +51,7 @@ function Search() {
   const handlePasswordReset = async (event) => {
     event.preventDefault();
     try {
-      await axios.post('http://localhost:5000/resetPassword', {
+      await axios.post(`${BASE_URL}/resetPassword`, {
         selectedUserId: selectedUser.username,
         password: newPassword
       });
@@ -112,7 +113,7 @@ function Search() {
           <p><strong>Semester:</strong> {selectedUser.semester}</p>
           <p><strong>Waiver:</strong> {selectedUser.waive}</p>
           <p><strong>PRP Paper:</strong> {selectedUser.pdfFileUrl && (
-  <a href={`http://localhost:5000${selectedUser.pdfFileUrl}`} target="_blank" rel="noopener noreferrer">Open PDF</a>
+  <a href={`${BASE_URL}${selectedUser.pdfFileUrl}`} target="_blank" rel="noopener noreferrer">Open PDF</a>
 )}
 </p>
         </div>

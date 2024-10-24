@@ -1,5 +1,6 @@
 import React, { useState, createContext, useContext, useEffect } from 'react';
 import axios from 'axios';
+import { BASE_URL } from './App';
 
 const AuthContext = createContext();
 
@@ -20,7 +21,7 @@ export const AuthProvider = ({ children }) => {
             
 
             try {
-                const response = await axios.get('http://localhost:5000/userData', { params: { userId: loggedInUserId } });
+                const response = await axios.get(`${BASE_URL}/userData`, { params: { userId: loggedInUserId } });
                 if (response.data.waive === 'admin') setIsAdmin(true); // Set admin flag to true
                 else setIsAdmin(false); // Set admin flag to false
                 setUser(response.data);

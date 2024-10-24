@@ -15,6 +15,8 @@ import './Navbar.css';
 import { AuthProvider, useAuth } from './AuthContext'; // Adjust the path if necessary
 import bannerImage from './images/banner.jpg';
 
+export const BASE_URL = process.env.REACT_APP_BASE_URL;
+
 function Navigation() {
     const { isAuthenticated, isAdmin, logout } = useAuth();
     const [showLogoutConfirm, setShowLogoutConfirm] = useState(false);
