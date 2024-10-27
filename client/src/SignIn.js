@@ -3,7 +3,7 @@ import React, { useState } from 'react';
 import axios from 'axios';
 import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from './AuthContext';
-
+import { BASE_URL } from './App';
 
 
 
@@ -23,7 +23,7 @@ function SignIn() {
 
     try {
       // Replace URL with your actual backend endpoint
-      const response = await axios.post('http://localhost:5000/signin', { username, password });
+      const response = await axios.post(`${BASE_URL}/signin`, { username, password });
       // Handle login success by logging in info and putting info into local Storage
       login(response.data);
       localStorage.setItem("localToken", JSON.stringify(response.data));

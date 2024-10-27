@@ -1,6 +1,7 @@
 import React, { useState, useEffect,  } from 'react';
 import axios from 'axios';
 import './Home.css'; // Ensure your CSS file is imported
+import { BASE_URL } from './App';
 import { useNavigate } from 'react-router-dom'; 
 
 const Home = () => {
@@ -12,7 +13,7 @@ const Home = () => {
 
   const fetchAnnouncements = async () => {
     try {
-      const response = await axios.get('http://localhost:5000/announcements');
+      const response = await axios.get(`${BASE_URL}/announcements`);
       setAnnouncements(response.data);
     } catch (error) {
       console.error('Error fetching announcements:', error);

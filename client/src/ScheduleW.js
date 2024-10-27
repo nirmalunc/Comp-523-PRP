@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import './Schedule.css';
 import ScheduleWTable from './ScheduleWTable';
+import { BASE_URL } from './App';
 
 function ScheduleW() {
     const [users, setUsers] = useState([]);
@@ -19,7 +20,7 @@ function ScheduleW() {
     useEffect(() => {
         const fetchUsers = async () => {
             try {
-                const response = await axios.get('http://localhost:5000/users?waive=yes');
+                const response = await axios.get(`${BASE_URL}/users?waive=yes`);
                 setUsers(response.data);
             } catch (error) {
                 console.error('Error fetching users:', error);
@@ -61,10 +62,10 @@ function ScheduleW() {
 
     const handleInfoSubmit = async () => {
         try {
-            await axios.post('http://localhost:5000/saveSchedulingData', { selectedUserId, schedulingData });
+            await axios.post(`${BASE_URL}/saveSchedulingData`, { selectedUserId, schedulingData });
             setIsReadOnly(true);
             // Fetch updated data
-            const updatedUsers = await axios.get('http://localhost:5000/users?waive=yes');
+            const updatedUsers = await axios.get(`${BASE_URL}/users?waive=yes`);
             setUsers(updatedUsers.data);
             console.log('Scheduling data saved successfully');
         } catch (error) {

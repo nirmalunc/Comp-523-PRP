@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
 import './Register.css'; // Import the CSS here
+import { BASE_URL } from './App';
 
 function Register() {
   const [username, setUsername] = useState('');
@@ -27,7 +28,7 @@ function Register() {
     };
   
     try {
-      const response = await axios.post('http://localhost:5000/register', userData);
+      const response = await axios.post(`${BASE_URL}/register`, userData);
       console.log('User registered:', response.data);
       navigate('/');
     } catch (error) {
