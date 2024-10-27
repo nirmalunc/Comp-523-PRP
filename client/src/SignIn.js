@@ -53,11 +53,11 @@ function SignIn() {
         <form onSubmit={handleSubmit} className="sign-in-form"> {/* Add a class if specific form styling is needed */}
           <div className="form-group">
             <label className="form-label">Username:</label>
-            <input type="text" className="form-input" value={username} onChange={(e) => setUsername(e.target.value)} required />
+            <input type="text" id="form-input" value={username} onChange={(e) => setUsername(e.target.value)} required />
           </div>
           <div className="form-group">
             <label className="form-label">Password:</label>
-            <input type="password" className="form-input" value={password} onChange={(e) => setPassword(e.target.value)} required />
+            <input type="password" id="form-input" value={password} onChange={(e) => setPassword(e.target.value)} required />
           </div>
           <button type="submit" className="form-button">Sign In</button>
           <p className="link-text">
