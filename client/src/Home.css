@@ -1,29 +1,27 @@
 /* Home.css */
-.home-container{
-  display:flex;
+.home-container {
+  display: flex;
   flex-direction: row;
-  min-width: 100%;
+  width: 100%;
   box-sizing: border-box;
   border-style: dashed;
+  align-items: flex-start; /* Aligns containers at the top */
 }
 
 .left-container {
-  max-width: 70%;
-  padding:20px;
+  flex: 1; /* Distributes space evenly */
+  padding: 20px;
   box-sizing: border-box;
-  left:0;
   border-style: solid;
 }
 
-.right-container{
-  max-width: 20%;       
-  right:0;     
+.right-container {
+  flex: 1; /* Distributes space evenly */
   padding: 20px;
   box-sizing: border-box;
   border-style: dotted;
 }
-
-.notifications-container,
+.notifications-container, 
 .calendar-container {
   flex: 1;
   margin: 10px;
