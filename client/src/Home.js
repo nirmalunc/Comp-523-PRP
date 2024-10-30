@@ -17,11 +17,21 @@ const Home = () => {
     reviewsAvailable: '',
     listenWaiver: ''
   });
+  const [pdf, setPdf] = useState('');
 
   useEffect(() => {
     fetchUserData();
     fetchAnnouncements();
+    fetchPdf();
+
   }, []);
+
+  useEffect(() => {
+    const isFormDataValid = validateFormData();
+    setIsTask1Checked(isFormDataValid);
+    console.log("Check if data is stored: ", user);
+    console.log("Form data validation result: ", isFormDataValid);
+  }, [user]);
 
   // fetches formData 
   const fetchUserData = async () => {
@@ -44,6 +54,16 @@ const Home = () => {
     }
   };
 
+  const fetchPdf = async () => {
+    try {
+      const response = await axios.get(`${BASE_URL}/userData`, {params: { userId: '6721364f620f8af45d329967' }});
+      setPdf(response.data.pdfFileUrl);
+    } catch (error) {
+      console.error('Error fetching pdf:', error);
+      // Handle error
+    }
+  };
+
   const GoToFormButton = () => {
     const navigate = useNavigate();
 
@@ -57,19 +77,43 @@ const Home = () => {
       </button>
     );
   };
+
  // validating if formData is null
   const validateFormData = () => {
-    if (!user.name || !user.id || !user.titleOfPRPTopic || !user.researchAdvisor || 
-      !user.prpSubmitted ||  !user.nameOfJournal 
-      || !user.paperAccepted || !user.reviewsAvailable || !user.listenWaiver) {
-        return false;
-      }
-    else {
-      return true;
-    }
-  } 
+      return (
+        user.name && user.id && user.titleOfPRPTopic && user.researchAdvisor && 
+        user.prpSubmitted &&  
+        user.paperAccepted && user.reviewsAvailable
+      );
+  };
 
+  const validatePdfUrl = () => {
+    return pdf.length > 0;
+  }
+
+  const isPdfValid = validatePdfUrl();
   const isFormDataValid = validateFormData();
+
+  console.log("check if pdf stored: " + isPdfValid);
+  console.log("check if data stored: " + isFormDataValid);
+
+  const [isTask1Checked, setIsTask1Checked] = useState(isFormDataValid);
+  const [isTask2Checked, setIsTask2Checked] = useState(isPdfValid);
+
+
+  useEffect(() => {
+    setIsTask1Checked(isFormDataValid);
+    setIsTask2Checked(isPdfValid);
+  }, [isFormDataValid, isPdfValid]);
+
+  // Toggle checkbox manually if user interacts
+  const handleCheckbox1Click = () => {
+    setIsTask1Checked((prev) => !prev);
+  };
+  const handleCheckbox2Click = () => {
+    setIsTask2Checked((prev) => !prev);
+  };
+
 
   return (
     <div className="home-container">
@@ -86,16 +130,26 @@ const Home = () => {
           <p style={{ textAlign: 'center' }}> Complete by []. </p>
         </div>
       </div>
-  
+
       <div className="right-container">
         <h3>To Do: </h3>
         <ul>
-          <li style={{ textDecoration: isFormDataValid ? 'line-through' : 'none' }}>
-            <input type="checkbox" id="task1" checked={isFormDataValid} onChange />
+          <li style={{ textDecoration: isTask1Checked ? 'line-through' : 'none' }}>
+            <input 
+              type="checkbox" 
+              id="task1" 
+              checked={isTask1Checked} 
+              onChange={handleCheckbox1Click} 
+            />
             <label htmlFor="task1"> Register or waive exam</label>
           </li>
-          <li>
-            <input type="checkbox" id="task2" />
+          <li style={{ textDecoration: isTask2Checked ? 'line-through' : 'none' }}>
+          <input 
+              type="checkbox" 
+              id="task2" 
+              checked={isTask2Checked} 
+              onChange={handleCheckbox2Click} 
+            />
             <label htmlFor="task2"> Upload document</label>
           </li>
           <li>
