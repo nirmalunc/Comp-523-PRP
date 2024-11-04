@@ -9,11 +9,14 @@
 .top-section {
   display: flex;
   justify-content: space-around; 
+  flex-wrap: wrap; /* Adds wrapping for child elements */
+  gap: 20px; /* Adds spacing */
 }
 
 .notifications-container {
   max-height: 500px; /* Adjust based on your layout */
   overflow-y: auto; /* Enables vertical scrolling when content overflows */
+  width: 100%; /* Ensures full screen utilized */
 }
 
 ul {
@@ -38,6 +41,8 @@ li {
   background-color: #fff;
   border-radius: 10px;
   box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+  min-width: 300px; /* Better for visibility on minimized screens */
+
 }
 
 .reset-section {
@@ -47,7 +52,7 @@ li {
 }
 
 .reset-button {
-  background-color: #dc3545;
+  background-color: #1434A4; /* Changed for Button Variation - Blue Background */
   color: white;
   border: none;
   border-radius: 4px;
@@ -72,4 +77,23 @@ li {
 
 .delete-button:hover {
   background-color: #ff0000; /* Darker shade of red on hover */
+}
+
+button:hover {
+  opacity: 0.9; /* Enables hover effect */
+}
+
+@media (max-width: 768px) {
+  .top-section {
+    flex-direction: column; /* Vertical Stack */
+    align-items: center;
+  }
+
+  .calendar-container {
+    width: 100%; /* Full width for minimized screens */
+  }
+
+  .notifications-container {
+    width: 100%; /* Full width for minimized screens */
+  }
 }
