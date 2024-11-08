@@ -10,6 +10,7 @@ import Search from './Search';
 import Register from './Register';
 import Schedule from './Schedule';
 import ScheduleW from './ScheduleW';
+import Emails from './Emails';
 import { NavLink, useNavigate } from 'react-router-dom';
 import './Navbar.css';
 import { AuthProvider, useAuth } from './AuthContext'; // Adjust the path if necessary
@@ -79,8 +80,9 @@ function Navigation() {
                     {!isAdmin && <NavLink to="/profile" activeClassName="active">Profile</NavLink>}
                     {!isAdmin && <NavLink to="/form" activeClassName="active">Form</NavLink>}
                     {isAdmin && <NavLink to="/search" activeClassName="active">Search</NavLink>}
+                    {isAdmin && <NavLink to="/emails" activeClassName="active">Emails</NavLink>}
                     {isAdmin && <NavLink to="/schedule" activeClassName="active">PRP</NavLink>}
-                    {isAdmin && <NavLink to="/schedule-w" activeClassName="active">Waived</NavLink>}
+                    {isAdmin && <NavLink to="/schedule-w" activeClassName="active">Waived</NavLink>}  
                     <button className="logout-button" onClick={handleLogoutClick}>
                         Logout
                     </button>
@@ -112,6 +114,7 @@ function App() {
                     <Route path="/search" element={<Search />} />
                     <Route path="/schedule" element={<Schedule />} />
                     <Route path="/schedule-w" element={<ScheduleW />} />
+                    <Route path="/emails" element={<Emails />} />
                 </Routes>
             </Router>
         </AuthProvider>
