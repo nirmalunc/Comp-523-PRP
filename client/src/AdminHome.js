@@ -6,6 +6,7 @@ import { useAuth } from './AuthContext';
 import { BASE_URL } from './App';
 import { Calendar, momentLocalizer } from 'react-big-calendar'
 import moment from 'moment';
+import EventEditModal from './EventEditModal';
 
 const AdminHome = () => {
   const [announcementText, setAnnouncementText] = useState('');
@@ -15,6 +16,8 @@ const AdminHome = () => {
   const [title, setTitle] = useState('');
   const [start, setStart] = useState('');
   const [end, setEnd] = useState('');
+  const [selectedEvent, setSelectedEvent] = useState(null);
+  const [isEditModalOpen, setIsEditModalOpen] = useState(false);
 
   useEffect(() => {
     fetchAnnouncements();
@@ -37,7 +40,6 @@ const AdminHome = () => {
       setEvents(events);
     } catch (error) {
       console.error('Error fetching events:', error);
-      // Handle error
     }
   };
 
@@ -50,42 +52,43 @@ const AdminHome = () => {
         endAccessor="end"
         style={{ height: 500, width: 800 }}
         popup
-        components={{
-          event: (props) => <EventWithDelete {...props} onDelete={handleDeleteEvent} />,
+        onSelectEvent={(event) => {
+          setSelectedEvent(event);
+          setIsEditModalOpen(true);
         }}
       />
     </div>
   );
 
-  const EventWithDelete = ({ event, onDelete }) => (
-    <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-      <span>{event.title}</span>
-      <button
-        style={{
-          marginLeft: '8px',
-          backgroundColor: '#dc3545',
-          color: 'white',
-          border: 'none',
-          borderRadius: '4px',
-          padding: '2px 5px',
-          cursor: 'pointer',
-        }}
-        onClick={(e) => {
-          e.stopPropagation(); // Prevents the calendar from opening the event's details
-          onDelete(event);
-        }}
-      >
-        <svg
-        xmlns="http://www.w3.org/2000/svg"
-        width="16"
-        height="16"
-        viewBox="0 0 24 24"
-      >
-        <path d="M3 6h18v2H3V6zm2 3h14l-1.5 14h-11L5 9zm5.5 2v10h-1V11h1zm4 0v10h-1V11h1zm2.5-8h-10v1h10V3z"/>
-      </svg>
-      </button>
-    </div>
-  );
+  // const EventWithDelete = ({ event, onDelete }) => (
+  //   <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between' }}>
+  //   <button
+  //       style={{
+  //         marginLeft: '8px',
+  //         backgroundColor: '#dc3545',
+  //         color: 'white',
+  //         border: 'none',
+  //         borderRadius: '4px',
+  //         padding: '2px 5px',
+  //         cursor: 'pointer',
+  //       }}
+  //       onClick={(e) => {
+  //         e.stopPropagation(); // Prevents the calendar from opening the event's details
+  //         onDelete(event);
+  //       }}
+  //     >
+  //       <svg
+  //       xmlns="http://www.w3.org/2000/svg"
+  //       width="16"
+  //       height="16"
+  //       viewBox="0 0 24 24"
+  //     >
+  //       <path d="M3 6h18v2H3V6zm2 3h14l-1.5 14h-11L5 9zm5.5 2v10h-1V11h1zm4 0v10h-1V11h1zm2.5-8h-10v1h10V3z"/>
+  //     </svg>
+  //     </button>
+  //     <div>{event.title}</div>
+  //   </div>
+  // );
 
   const handleDeleteEvent = async (event) => {
     if (window.confirm(`Are you sure you want to delete the event: "${event.title}"?`)) {
@@ -141,6 +144,25 @@ const AdminHome = () => {
       console.error('Error creating event:', error);
     }
   };  
+
+  const handleEventUpdate = async (updatedEvent) => {
+    try {
+      const token = localStorage.getItem("jwtToken");
+      const response = await axios.put(
+        `${BASE_URL}/events/${updatedEvent._id}`,
+        updatedEvent,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+      console.log(response.data)
+      fetchEvents();
+    } catch (error) {
+      console.error('Error updating event:', error);
+    }
+  };
 
   const deleteEvents = async () => {
     if (window.confirm(`Are you sure you want to delete ALL events?`)) {
@@ -328,6 +350,17 @@ const AdminHome = () => {
           <button onClick={deleteEvents} className="reset-button" >Reset Calendar</button>
         </div>
       )}
+
+    <EventEditModal
+      isOpen={isEditModalOpen}
+      onClose={() => {
+        setIsEditModalOpen(false);
+        setSelectedEvent(null);
+      }}
+      event={selectedEvent}
+      onSave={handleEventUpdate}
+      onDelete={handleDeleteEvent}
+    />
     </div>
   );
 };

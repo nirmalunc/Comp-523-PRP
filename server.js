@@ -40,9 +40,10 @@ const storage = multer.diskStorage({
 const upload = multer({ storage: storage });
 app.use('/uploads', express.static('uploads'));
 
+// Helper method to authenticate admins
 const authenticateToken = (req, res, next) => {
   const authHeader = req.headers['authorization'];
-  const token = authHeader && authHeader.split(' ')[1]; // Get the token after 'Bearer'
+  const token = authHeader && authHeader.split(' ')[1];
 
   if (!token) return res.sendStatus(401); // Unauthorized if no token
 
@@ -53,6 +54,20 @@ const authenticateToken = (req, res, next) => {
     next(); // Continue to the next middleware or route handler
   });
 };
+
+// Helper function to update events on the calendar
+async function updateEvent(id, title, start, end) {
+  try {
+    const updatedEvent = await Event.findByIdAndUpdate(
+      id,
+      { $set: { title, start, end } },
+      { new: true } // Return the updated document
+    );
+    return updatedEvent; // Return the updated event object
+  } catch (error) {
+    console.error('Error updating event:', error);
+  }
+}
 
 //Sign in check
 app.post('/signin', async (req, res) => {
@@ -327,6 +342,22 @@ app.delete('/events', authenticateToken, async (req, res) => {
     res.status(200).json({ message: 'All events deleted successfully', deletedCount: result.deletedCount });
   } catch (error) {
     console.error('Error deleting all events:', error);
+    res.status(500).send('Server error');
+  }
+});
+
+app.put('/events/:id', authenticateToken, async (req, res) => {
+  const { id } = req.params;
+  const { start, end, title } = req.body;
+
+  try {
+    const updatedEvent = await updateEvent(id, title, start, end);
+    if (!updatedEvent) {
+      return res.status(404).json({ message: 'Event not found' });
+    }
+    res.json(updatedEvent);
+  } catch (error) {
+    console.error('Error updating event:', error);
     res.status(500).send('Server error');
   }
 });
