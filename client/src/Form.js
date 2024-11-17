@@ -51,6 +51,7 @@ function Form() {
   const handleFormSubmit = async (event) => {
   event.preventDefault();
   try {
+      console.log(user.id)
       await axios.post(`${BASE_URL}/saveFormData`, { userId: user.id, formData }); //Post to Database
       updateFormData(formData); //Update user context of formData
       setIsReadOnly(true); // Make fields read-only after saving
@@ -58,6 +59,7 @@ function Form() {
       updateWaiveOption(waiverOption === 'waiver' ? 'yes' : 'no' ); //Update user context of waiveOption
       console.log('Form data saved successfully');
   } catch (error) {
+      console.log(error.toJSON())
       console.error('Error saving form data', error);
   }
 };

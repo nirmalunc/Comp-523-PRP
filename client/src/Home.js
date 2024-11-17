@@ -3,6 +3,7 @@ import axios from 'axios';
 import './Home.css'; // Ensure your CSS file is imported
 import { BASE_URL } from './App';
 import { useNavigate } from 'react-router-dom'; 
+import { user } from './AuthContext';
 
 const Home = () => {
   const [announcements, setAnnouncements] = useState([]);
@@ -36,7 +37,7 @@ const Home = () => {
   // fetches formData 
   const fetchUserData = async () => {
     try {
-      const response = await axios.get(`${BASE_URL}/userData`, {params: { userId: '6721364f620f8af45d329967' }});
+      const response = await axios.get(`${BASE_URL}/userData`, {params: { userId: localStorage.getItem("id") }});
       setUser(response.data.formData);
     } catch (error) {
       console.error('Error fetching user data:', error);
@@ -56,7 +57,7 @@ const Home = () => {
 
   const fetchPdf = async () => {
     try {
-      const response = await axios.get(`${BASE_URL}/userData`, {params: { userId: '6721364f620f8af45d329967' }});
+      const response = await axios.get(`${BASE_URL}/userData`, {params: { userId: localStorage.getItem("id") }});
       setPdf(response.data.pdfFileUrl);
     } catch (error) {
       console.error('Error fetching pdf:', error);

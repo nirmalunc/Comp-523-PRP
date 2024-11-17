@@ -31,16 +31,19 @@ function Emails() {
 
         fetchUsers();
     }, []);
+	
 
     // returns correct output based on filter selection
-    const filteredUsers = users.filter(user => {
-        if (filter === "All") return true;
-        if (filter === "Registered") return user.waive === "no";
-        if (filter === "Waived") return user.waive === "yes";
-        if (filter === "Uploaded document") return user.formData?.pdfFileUrl && user.formData.pdfFileUrl !== "";
-        if (filter === "Did not upload document") return !user.formData?.pdfFileUrl || user.formData.pdfFileUrl === "";
-        return false;
-    });
+    const filteredUsers = Array.isArray(users) ? users.filter(user => {
+		if (filter === "All") return true;
+	
+		if (filter === "Registered") return user.waive === "no";
+		if (filter === "Waived") return user.waive === "yes";
+		if (filter === "Uploaded document") return typeof user.pdfFileUrl === "string" && user.pdfFileUrl.length > 0;
+		if (filter === "Did not upload document") return !user.pdfFileUrl || user.pdfFileUrl.length === 0;
+	
+		return false;
+	}) : [];
 
     if (loading) return <p>Loading...</p>;
     if (error) return <p>{error}</p>;
