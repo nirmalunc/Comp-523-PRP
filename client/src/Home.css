@@ -1,26 +1,34 @@
 /* Home.css */
-.home-container{
-  display:flex;
+.home-container {
+  display: flex;
   flex-direction: row;
-  min-width: 100%;
-  box-sizing: border-box;
-  border-style: dashed;
+  justify-content: space-between;
+  align-items: flex-start;
+  width: 100%;
 }
 
 .left-container {
-  max-width: 70%;
-  padding:20px;
-  box-sizing: border-box;
-  left:0;
-  border-style: solid;
-}
-
-.right-container{
-  max-width: 20%;       
-  right:0;     
+  flex: 3;
   padding: 20px;
   box-sizing: border-box;
-  border-style: dotted;
+  text-align: center;
+}
+
+.right-container {
+  flex: 1;
+  padding: 20px;
+  box-sizing: border-box;
+  text-align: left;
+}
+
+.task-item {
+  display: flex;
+  align-items: center; /* Aligns checkbox and text vertically */
+  margin-bottom: 10px; /* Adds space between tasks */
+}
+
+.task-item input[type="checkbox"] {
+  margin-right: 10px; /* Adds space between checkbox and label */
 }
 
 .notifications-container,
