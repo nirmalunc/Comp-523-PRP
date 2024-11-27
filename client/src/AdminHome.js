@@ -7,6 +7,8 @@ const AdminHome = () => {
   const [announcementText, setAnnouncementText] = useState('');
   const { isAdmin } = useAuth();
   const [announcements, setAnnouncements] = useState([]);
+  const [emailSubject, setEmailSubject] = useState('');
+  const [emailMessage, setEmailMessage] = useState('');
 
   useEffect(() => {
     fetchAnnouncements();
@@ -22,35 +24,29 @@ const AdminHome = () => {
     }
   };
 
-  const handleAnnouncementSubmit = async () => {
-    try {
-      await axios.post('http://localhost:3000/announcement', { message: announcementText });
-      setAnnouncementText('');
-      fetchAnnouncements();
-    } catch (error) {
-      console.error('Error making announcement:', error);
+  const handleSendEmail = async () => {
+    if (!emailSubject.trim() || !emailMessage.trim()) {
+      alert('Both subject and message are required.');
+      return;
     }
-  };
-
-  const handleDeleteAnnouncement = async (id) => {
-    if (window.confirm('Are you sure you want to delete this announcement?')) {
+  
+    if (window.confirm('Are you sure you want to send this email to all students?')) {
       try {
-        const response = await axios.delete(`http://localhost:3000/announcement/${id}`);
-        if (response.status === 200) {
-          alert('Announcement deleted successfully');
-          // Refresh the announcements list
-          fetchAnnouncements();
-        }
+        await axios.post('http://localhost:3000/admin/sendEmail', {
+          subject: emailSubject,
+          message: emailMessage,
+        });
+        alert('Emails sent successfully');
+        setEmailSubject('');
+        setEmailMessage('');
       } catch (error) {
-        console.error('Error deleting announcement:', error);
-        alert('Failed to delete announcement');
+        console.error('Error sending emails:', error.response?.data || error.message);
+        alert(`Failed to send emails: ${error.response?.data || 'Unknown error'}`);
       }
     }
   };
-
-  const handleAnnouncementChange = (event) => {
-    setAnnouncementText(event.target.value);
-  };
+  
+  
 
   const handleReset = async () => {
     if (window.confirm('Are you sure you want to reset the semester? This action cannot be undone.')) {
@@ -68,25 +64,28 @@ const AdminHome = () => {
   return (
     <div className="home-container">
       <div className="top-section"> 
-      <div className="notifications-container">
-        <h2>Announcements</h2>
-        <textarea
-          value={announcementText}
-          onChange={handleAnnouncementChange}
-          placeholder="Enter your announcement..."
-          className="announcement-input"
-          maxLength="300" // limit to 300 characters
-        />
-        <ul>
-          {announcements.map((announcement) => (
-           <li key={announcement._id}>
-              {announcement.message}
-              <button onClick={() => handleDeleteAnnouncement(announcement._id)} className="delete-button">Delete</button>
-            </li>
-          ))}
-        </ul>
-        <button onClick={handleAnnouncementSubmit} className="announcement-submit-button">Make Announcement</button>
-      </div>
+        <div className="email-section">
+          <h2>Email Announcement</h2>
+          <div className="email-form">
+            <input
+              type="text"
+              placeholder="Subject"
+              value={emailSubject}
+              onChange={(e) => setEmailSubject(e.target.value)}
+              className="email-input"
+            />
+            <textarea
+              placeholder="Message"
+              value={emailMessage}
+              onChange={(e) => setEmailMessage(e.target.value)}
+              className="email-textarea"
+            />
+            <button className="email-button" onClick={handleSendEmail}>
+              Send Email
+            </button>
+          </div>
+        </div>
+
       
 
       <div className="calendar-container">
