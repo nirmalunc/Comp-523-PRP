@@ -9,7 +9,7 @@
 
 .search-form {
   display: flex;
-  margin-bottom: 20px; /* Spacing between search and results */
+  margin-bottom: 20px; 
 }
 
 .search-input {
@@ -27,7 +27,7 @@
   border-radius: 4px;
   padding: 8px 15px;
   cursor: pointer;
-  width: 150px; /* Ensures that the button is wider */
+  width: 150px; 
 }
 
 .search-results {

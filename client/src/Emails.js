@@ -50,7 +50,6 @@ function Emails() {
 
     return (
         <div>
-            <h1>Emails</h1>
             <div className="filter-container">
                 <label htmlFor="filter">Select Status:</label>
                 <select
