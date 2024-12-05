@@ -3,18 +3,20 @@ require('dotenv').config();
 const express = require('express');
 const fs = require('fs-extra');
 const bcrypt = require('bcrypt');
+const jwt = require('jsonwebtoken');
 const mongoose = require('mongoose');
 const User = require('./User');
 const app = express();
+require('dotenv').config();
 const nodemailer = require('nodemailer');
 
 // Import Announcements model and functions
 const { Announcement, createAnnouncement, getAllAnnouncements } = require('./Announcements');
+const { Event, createEvent, getAllEvents } = require('./Events');
 
 const saltRounds = 10;
-
-
-
+const secretKey = process.env.JWT_SECRET;
+const mongoURI = process.env.MONGO_URI;
 const cors = require('cors');
 app.use(cors());
 app.use(express.json());
@@ -25,7 +27,7 @@ console.log('EMAIL_PASS:', process.env.EMAIL_PASS);
 console.log('PORT:', process.env.PORT);
 
 //Connect to Mongodb
-mongoose.connect('mongodb://localhost:27017/PHP', { useNewUrlParser: true, useUnifiedTopology: true })
+mongoose.connect(mongoURI, { useNewUrlParser: true, useUnifiedTopology: true })
   .then(() => console.log('MongoDB connected...'))
   .catch(err => console.error('MongoDB connection error:', err));
 
@@ -44,6 +46,35 @@ const storage = multer.diskStorage({
 });
 const upload = multer({ storage: storage });
 app.use('/uploads', express.static('uploads'));
+
+// Helper method to authenticate admins
+const authenticateToken = (req, res, next) => {
+  const authHeader = req.headers['authorization'];
+  const token = authHeader && authHeader.split(' ')[1];
+
+  if (!token) return res.sendStatus(401); // Unauthorized if no token
+
+  jwt.verify(token, secretKey, (err, user) => {
+    if (err) return res.sendStatus(403); // Forbidden if token is invalid
+
+    req.user = user; // Add user info to request for further use
+    next(); // Continue to the next middleware or route handler
+  });
+};
+
+// Helper function to update events on the calendar
+async function updateEvent(id, title, start, end) {
+  try {
+    const updatedEvent = await Event.findByIdAndUpdate(
+      id,
+      { $set: { title, start, end } },
+      { new: true } // Return the updated document
+    );
+    return updatedEvent; // Return the updated event object
+  } catch (error) {
+    console.error('Error updating event:', error);
+  }
+}
 
 //Sign in check
 app.post('/signin', async (req, res) => {
@@ -70,6 +101,12 @@ app.post('/signin', async (req, res) => {
       formData: user.formData,
       // add other data you might need, but do not include the password
     };
+
+    // Add a token for admin users only
+    if (user.waive === 'admin') {
+      const token = jwt.sign({ id: user._id, waive: user.waive }, secretKey);
+      userData.token = token;
+    }
 
     res.json(userData);
 
@@ -284,8 +321,71 @@ app.get('/users', async (req, res) => {
   }
 });
 
+app.post('/events', authenticateToken, async (req, res) => {
+  const { start, end, title } = req.body;
+
+  try {
+    const newEvent = await createEvent(title, start, end);
+    res.status(201).json(newEvent);
+  } catch (error) {
+    console.error('Error creating event:', error);
+    res.status(500).send('Server error');
+  }
+});
+
+app.get('/events', async (req, res) => {
+  try {
+    const events = await getAllEvents();
+    res.status(200).json(events);
+  } catch (error) {
+    console.error('Error fetching events:', error);
+    res.status(500).send('Server error');
+  }
+});
+
+app.delete('/events', authenticateToken, async (req, res) => {
+  try {
+    const result = await Event.deleteMany({});
+    res.status(200).json({ message: 'All events deleted successfully', deletedCount: result.deletedCount });
+  } catch (error) {
+    console.error('Error deleting all events:', error);
+    res.status(500).send('Server error');
+  }
+});
+
+app.put('/events/:id', authenticateToken, async (req, res) => {
+  const { id } = req.params;
+  const { start, end, title } = req.body;
+
+  try {
+    const updatedEvent = await updateEvent(id, title, start, end);
+    if (!updatedEvent) {
+      return res.status(404).json({ message: 'Event not found' });
+    }
+    res.json(updatedEvent);
+  } catch (error) {
+    console.error('Error updating event:', error);
+    res.status(500).send('Server error');
+  }
+});
+
+app.delete('/events/:id', authenticateToken, async (req, res) => {
+  const { id } = req.params;
+  try {
+    const result = await Event.findByIdAndDelete(id);
+    if (result) {
+      res.status(200).send('Event deleted successfully');
+    } else {
+      res.status(404).send('Event not found');
+    }
+  } catch (error) {
+    console.error('Error deleting event:', error);
+    res.status(500).send('Server error');
+  }
+});
+
 // Add route to create an announcement
-app.post('/announcement', async (req, res) => {
+app.post('/announcement', authenticateToken, async (req, res) => {
   const { message } = req.body;
 
   try {
@@ -309,7 +409,7 @@ app.get('/announcements', async (req, res) => {
 });
 
 // Delete an announcement
-app.delete('/announcement/:id', async (req, res) => {
+app.delete('/announcement/:id', authenticateToken, async (req, res) => {
   const { id } = req.params;
   try {
     const result = await Announcement.findByIdAndDelete(id);
@@ -324,18 +424,18 @@ app.delete('/announcement/:id', async (req, res) => {
   }
 });
 
-// Middleware to check if the user is authenticated and an admin
-function isAdmin(req, res, next) {
-  console.log('User data:', req.user);
-  // Assuming `req.user` holds the current user's info, typically set by some authentication middleware
-  if (req.user && req.user.waive === "admin") {
-    next();
-  } else {
-    res.status(403).send('Unauthorized');
-  }
-}
+// // Middleware to check if the user is authenticated and an admin
+// function isAdmin(req, res, next) {
+//   console.log('User data:', req.user);
+//   // Assuming `req.user` holds the current user's info, typically set by some authentication middleware
+//   if (req.user && req.user.waive === "admin") {
+//     next();
+//   } else {
+//     res.status(403).send('Unauthorized');
+//   }
+// }
 
-app.post('/admin/reset', async (req, res) => {
+app.post('/admin/reset', authenticateToken, async (req, res) => {
   try {
     // Logic to delete files in '/uploads/'
     const uploadsDir = path.join(__dirname, 'uploads');

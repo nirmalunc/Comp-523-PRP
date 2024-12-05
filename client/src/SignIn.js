@@ -20,24 +20,32 @@ function SignIn() {
   const handleSubmit = async (event) => {
     event.preventDefault();
     setErrorMessage(''); // Clear any previous error messages
-
+  
     try {
-      // Replace URL with your actual backend endpoint
+      // Send the login request to the backend
       const response = await axios.post(`${BASE_URL}/signin`, { username, password });
-      // Handle login success by logging in info and putting info into local Storage
-      login(response.data);
-      localStorage.setItem("localToken", JSON.stringify(response.data));
-      localStorage.setItem("id", response.data.id);
       
-      //************************************* */
+      // Handle login success by storing user info in localStorage
+      login(response.data); // Update auth context or state as needed
+      localStorage.setItem("localToken", JSON.stringify(response.data)); // Store user data
+      localStorage.setItem("id", response.data.id); // Store user ID separately if needed
+  
+      // Check if user is an admin and if a token exists, then store JWT token
+      if (response.data.waive === 'admin' && response.data.token) {
+        localStorage.setItem("jwtToken", response.data.token); // Store JWT token for admin
+      }
+  
+      // Navigate based on user role
       if (response.data.waive === 'admin') {
         navigate('/admin-home');
+      } else {
+        navigate('/home');
       }
-      else navigate('/home');
+  
     } catch (error) {
       if (error.response && error.response.status === 401) {
         // Handle 401 Unauthorized
-        setErrorMessage('username does not exist or password is incorrect.');
+        setErrorMessage('Username does not exist or password is incorrect.');
       } else {
         // Handle other errors
         setErrorMessage('An error occurred. Please try again.');

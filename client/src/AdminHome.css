@@ -16,8 +16,10 @@
 .notifications-container {
   max-height: 500px; /* Adjust based on your layout */
   overflow-y: auto; /* Enables vertical scrolling when content overflows */
-  width: 100%; /* Ensures full screen utilized */
-}
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  width: 100%; /* Ensures full screen utilized */}
 
 ul {
   padding: 0;
@@ -48,7 +50,10 @@ li {
 .reset-section {
   margin-top: 20px; 
   width: 100%; 
-  text-align: center; 
+  text-align: center;
+  display: flex;
+  justify-content: space-around;
+  gap: 20px;
 }
 
 .reset-button {
