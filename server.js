@@ -465,7 +465,7 @@ if (require.main === module) {
     // The file is being required as a module from elsewhere, likely a test
     server = app.listen(); // Listen without specifying a port for testing
 }
-app.post('/admin/sendEmail', async (req, res) => {
+app.post('/admin/sendEmail', authenticateToken, async (req, res) => {
   const { subject, message } = req.body;
 
 

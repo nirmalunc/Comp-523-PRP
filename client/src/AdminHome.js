@@ -189,7 +189,7 @@ const AdminHome = () => {
 
   const fetchAnnouncements = async () => {
     try {
-      const response = await axios.get('http://localhost:3000/announcements');
+      const response = await axios.get(`${BASE_URL}/announcements`);
       setAnnouncements(response.data);
     } catch (error) {
       console.error('Error fetching announcements:', error);
@@ -238,6 +238,12 @@ const handleAnnouncementSubmit = async () => {
           // Refresh the announcements list
           fetchAnnouncements();
         }
+      } catch (error) {
+        console.error('Error deleting announcement:', error.response?.data || error.message);
+        alert(`Failed to delete announcement: ${error.response?.data || 'Unknown error'}`);
+      }
+    }
+  };  
         
   const handleSendEmail = async () => {
     if (!emailSubject.trim() || !emailMessage.trim()) {
@@ -247,10 +253,21 @@ const handleAnnouncementSubmit = async () => {
   
     if (window.confirm('Are you sure you want to send this email to all students?')) {
       try {
-        await axios.post('http://localhost:3000/admin/sendEmail', {
-          subject: emailSubject,
-          message: emailMessage,
-        });
+        const token = localStorage.getItem("jwtToken");
+  
+        await axios.post(
+          `${BASE_URL}/admin/sendEmail`,
+          {
+            subject: emailSubject,
+            message: emailMessage,
+          },
+          {
+            headers: {
+              Authorization: `Bearer ${token}`, // Pass the token in the Authorization header
+            },
+          }
+        );
+  
         alert('Emails sent successfully');
         setEmailSubject('');
         setEmailMessage('');
@@ -294,23 +311,24 @@ const handleAnnouncementSubmit = async () => {
     <div className="home-container">
       <div className="top-section"> 
       <div className="notifications-container">
-        <h2>Announcements</h2>
-        <textarea
-          value={announcementText}
-          onChange={handleAnnouncementChange}
-          placeholder="Enter your announcement..."
-          className="announcement-input"
-          maxLength="300" // limit to 300 characters
-        />
-        <ul>
-          {announcements.map((announcement) => (
-           <li key={announcement._id}>
-              {announcement.message}
-              <button onClick={() => handleDeleteAnnouncement(announcement._id)} className="delete-button">Delete</button>
-            </li>
-          ))}
-        </ul>
-        <button onClick={handleAnnouncementSubmit} className="announcement-submit-button">Make Announcement</button>
+      <h2>Email Announcement</h2>
+          <div className="email-form">
+            <input
+              type="text"
+              placeholder="Subject"
+              value={emailSubject}
+              onChange={(e) => setEmailSubject(e.target.value)}
+              className="email-input"
+            />
+            <textarea
+              placeholder="Message"
+              value={emailMessage}
+              onChange={(e) => setEmailMessage(e.target.value)}
+              className="email-textarea"
+            />
+            <button className="email-button" onClick={handleSendEmail}>
+              Send Email
+            </button>
         <h2>Calendar Events</h2>
         <form onSubmit={handleEventSubmit}>
       <div>
@@ -345,26 +363,6 @@ const handleAnnouncementSubmit = async () => {
       </div>
     </form>
       </div>
-        <div className="email-section">
-          <h2>Email Announcement</h2>
-          <div className="email-form">
-            <input
-              type="text"
-              placeholder="Subject"
-              value={emailSubject}
-              onChange={(e) => setEmailSubject(e.target.value)}
-              className="email-input"
-            />
-            <textarea
-              placeholder="Message"
-              value={emailMessage}
-              onChange={(e) => setEmailMessage(e.target.value)}
-              className="email-textarea"
-            />
-            <button className="email-button" onClick={handleSendEmail}>
-              Send Email
-            </button>
-          </div>
         </div>
       
 
@@ -381,14 +379,12 @@ const handleAnnouncementSubmit = async () => {
       </div>
 
       {/* Reset Section */}
-      {isAdmin && (
         <div className="reset-section">
             <button className="reset-button" onClick={handleReset}>
               Reset Semester
             </button>
           <button onClick={deleteEvents} className="reset-button" >Reset Calendar</button>
         </div>
-      )}
 
     <EventEditModal
       isOpen={isEditModalOpen}
