@@ -1,4 +1,5 @@
 
+require('dotenv').config();
 const express = require('express');
 const fs = require('fs-extra');
 const bcrypt = require('bcrypt');
@@ -7,6 +8,7 @@ const mongoose = require('mongoose');
 const User = require('./User');
 const app = express();
 require('dotenv').config();
+const nodemailer = require('nodemailer');
 
 // Import Announcements model and functions
 const { Announcement, createAnnouncement, getAllAnnouncements } = require('./Announcements');
@@ -18,6 +20,11 @@ const mongoURI = process.env.MONGO_URI;
 const cors = require('cors');
 app.use(cors());
 app.use(express.json());
+
+console.log('MONGO_URI:', process.env.MONGO_URI);
+console.log('EMAIL_USER:', process.env.EMAIL_USER);
+console.log('EMAIL_PASS:', process.env.EMAIL_PASS);
+console.log('PORT:', process.env.PORT);
 
 //Connect to Mongodb
 mongoose.connect(mongoURI, { useNewUrlParser: true, useUnifiedTopology: true })
@@ -450,7 +457,7 @@ app.post('/admin/reset', authenticateToken, async (req, res) => {
 let server;
 if (require.main === module) {
     // The file is being executed directly, not required as a module
-    const PORT = process.env.PORT || 5000;
+    const PORT = process.env.PORT || 3000;
     server = app.listen(PORT, () => {
         console.log(`Server running on port ${PORT}`);
     });
@@ -458,5 +465,49 @@ if (require.main === module) {
     // The file is being required as a module from elsewhere, likely a test
     server = app.listen(); // Listen without specifying a port for testing
 }
+app.post('/admin/sendEmail', async (req, res) => {
+  const { subject, message } = req.body;
+
+
+  if (!subject || !message) {
+    return res.status(400).send('Subject and message are required');
+  }
+
+  try {
+    const students = await User.find({ waive: { $ne: 'admin' } });
+
+    if (!students.length) {
+      return res.status(404).send('No students found to send emails to.');
+    }
+
+    const transporter = nodemailer.createTransport({
+      service: 'gmail',
+      auth: {
+        user: process.env.EMAIL_USER,
+        pass: process.env.EMAIL_PASS,
+      },
+    });
+
+    const emailPromises = students.map(student => {
+      return transporter.sendMail({
+        from: process.env.EMAIL_USER,
+        to: student.email,
+        subject: subject,
+        text: message,
+      }).catch(err => {
+        console.error(`Failed to send email to ${student.email}:`, err);
+        return null; // Handle failed emails
+      });
+    });
+
+    const results = await Promise.all(emailPromises);
+    const successCount = results.filter(result => result !== null).length;
+
+    res.send(`${successCount} emails sent successfully.`);
+  } catch (error) {
+    console.error('Error sending emails:', error);
+    res.status(500).send('Error sending emails');
+  }
+});
 
 module.exports = { app, server }; // Export both app and server

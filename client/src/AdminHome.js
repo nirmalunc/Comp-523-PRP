@@ -18,6 +18,8 @@ const AdminHome = () => {
   const [end, setEnd] = useState('');
   const [selectedEvent, setSelectedEvent] = useState(null);
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
+  const [emailSubject, setEmailSubject] = useState('');
+  const [emailMessage, setEmailMessage] = useState('');
 
   useEffect(() => {
     fetchAnnouncements();
@@ -187,7 +189,7 @@ const AdminHome = () => {
 
   const fetchAnnouncements = async () => {
     try {
-      const response = await axios.get(`${BASE_URL}/announcements`);
+      const response = await axios.get('http://localhost:3000/announcements');
       setAnnouncements(response.data);
     } catch (error) {
       console.error('Error fetching announcements:', error);
@@ -195,7 +197,7 @@ const AdminHome = () => {
     }
   };
 
-  const handleAnnouncementSubmit = async () => {
+const handleAnnouncementSubmit = async () => {
     try {
       // Retrieve the token from localStorage
       const token = localStorage.getItem("jwtToken");
@@ -236,9 +238,25 @@ const AdminHome = () => {
           // Refresh the announcements list
           fetchAnnouncements();
         }
+        
+  const handleSendEmail = async () => {
+    if (!emailSubject.trim() || !emailMessage.trim()) {
+      alert('Both subject and message are required.');
+      return;
+    }
+  
+    if (window.confirm('Are you sure you want to send this email to all students?')) {
+      try {
+        await axios.post('http://localhost:3000/admin/sendEmail', {
+          subject: emailSubject,
+          message: emailMessage,
+        });
+        alert('Emails sent successfully');
+        setEmailSubject('');
+        setEmailMessage('');
       } catch (error) {
-        console.error('Error deleting announcement:', error);
-        alert('Failed to delete announcement');
+        console.error('Error sending emails:', error.response?.data || error.message);
+        alert(`Failed to send emails: ${error.response?.data || 'Unknown error'}`);
       }
     }
   };  
@@ -327,6 +345,27 @@ const AdminHome = () => {
       </div>
     </form>
       </div>
+        <div className="email-section">
+          <h2>Email Announcement</h2>
+          <div className="email-form">
+            <input
+              type="text"
+              placeholder="Subject"
+              value={emailSubject}
+              onChange={(e) => setEmailSubject(e.target.value)}
+              className="email-input"
+            />
+            <textarea
+              placeholder="Message"
+              value={emailMessage}
+              onChange={(e) => setEmailMessage(e.target.value)}
+              className="email-textarea"
+            />
+            <button className="email-button" onClick={handleSendEmail}>
+              Send Email
+            </button>
+          </div>
+        </div>
       
 
       {/* <div className="calendar-container">

@@ -55,19 +55,18 @@ const Home = () => {
       <div className="right-container">
       <h3>To Do: </h3>
       <ul>
-        <li>
-          <input type="checkbox" id="task1" />
-          <label htmlFor="task1"> Register or waive exam</label>
-        </li>
-        <li>
-          <input type="checkbox" id="task2" />
-          <label htmlFor="task2"> Upload document</label>
-        </li>
-        <li>
-          <input type="checkbox" id="task3" />
-          <label htmlFor="task3"> Present</label>
-        </li>
-
+      <li className="task-item">
+        <input type="checkbox" id="task1" />
+        <label htmlFor="task1">Register or waive exam</label>
+      </li>
+      <li className="task-item">
+        <input type="checkbox" id="task2" />
+        <label htmlFor="task2">Upload document</label>
+      </li>
+      <li className="task-item">
+        <input type="checkbox" id="task3" />
+        <label htmlFor="task3">Present</label>
+      </li>
       </ul>
     </div>
 

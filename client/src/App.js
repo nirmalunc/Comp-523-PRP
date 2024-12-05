@@ -10,6 +10,7 @@ import Search from './Search';
 import Register from './Register';
 import Schedule from './Schedule';
 import ScheduleW from './ScheduleW';
+import Calendar from './Calendar';
 import { NavLink, useNavigate } from 'react-router-dom';
 import './Navbar.css';
 import { AuthProvider, useAuth } from './AuthContext'; // Adjust the path if necessary
@@ -53,6 +54,7 @@ function Navigation() {
                 <NavLink to="/home" activeClassName="active">Home</NavLink>
                 {!isAdmin && <NavLink to="/profile" activeClassName="active">Profile</NavLink>}
                 {!isAdmin && <NavLink to="/form" activeClassName="active">Form</NavLink>}
+                {!isAdmin && <NavLink to="/calendar" activeClassName="active">Calendar</NavLink>}
                 {isAdmin && <NavLink to="/admin-home" activeClassName="active">Home</NavLink>}
                 {isAdmin && <NavLink to="/search" activeClassName="active">Search</NavLink>}
                 {isAdmin && <NavLink to="/schedule" activeClassName="active">PRP</NavLink>}
@@ -112,6 +114,7 @@ function App() {
                     <Route path="/search" element={<Search />} />
                     <Route path="/schedule" element={<Schedule />} />
                     <Route path="/schedule-w" element={<ScheduleW />} />
+                    <Route path="/calendar" element={<Calendar />} />
                 </Routes>
             </Router>
         </AuthProvider>
