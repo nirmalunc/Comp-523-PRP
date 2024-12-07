@@ -1,34 +1,52 @@
-/* Home.css */
-.home-container {
+.subhome {
   display: flex;
   flex-direction: row;
   justify-content: space-between;
   align-items: flex-start;
   width: 100%;
+  padding: 20px;
+  gap:20px;
+  box-sizing: border-box;
 }
 
 .left-container {
-  flex: 3;
-  padding: 20px;
-  box-sizing: border-box;
-  text-align: center;
-}
-
-.right-container {
   flex: 1;
   padding: 20px;
   box-sizing: border-box;
+  text-align: center;
+  border-radius: 8px; 
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); 
+  border: 1px solid #e0e0e0; 
+}
+
+.right-container {
+  flex: 3;
+  padding: 20px;
+  box-sizing: border-box;
   text-align: left;
+  border-radius: 8px; 
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* Subtle shadow */
+  border: 1px solid #e0e0e0; 
 }
 
 .task-item {
   display: flex;
-  align-items: center; /* Aligns checkbox and text vertically */
-  margin-bottom: 10px; /* Adds space between tasks */
+  align-items: center;
+  margin-bottom: 20px;
+  background-color: #f8f8ff; 
+  padding: 10px;
+  border-radius: 5px; 
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); 
 }
 
 .task-item input[type="checkbox"] {
-  margin-right: 10px; /* Adds space between checkbox and label */
+  margin-right: 10px; 
+  width: 18px; 
+  height: 18px;
+}
+
+.task-item label {
+  font-size: 16px;
 }
 
 .notifications-container,
@@ -40,11 +58,11 @@
   border-radius: 10px;
   box-shadow: 0 4px 6px rgba(0,0,0,0.1);
   display: flex;
-  flex-direction: column; /* Make sure the container can expand vertically */
+  flex-direction: column; 
 }
 
 .notifications-container {
-  margin-right: 20px; /* Adjust space between notifications and calendar */
+  margin-right: 20px; 
 }
 /* CSS for the Reset Button */
 
