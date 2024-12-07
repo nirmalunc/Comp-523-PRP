@@ -10,21 +10,41 @@ const EventEditModal = ({ isOpen, onClose, event, onSave, onDelete }) => {
 
   useEffect(() => {
     if (event) {
+      // Convert dates to local timezone string
+      const startDate = new Date(event.start);
+      const endDate = new Date(event.end);
+      
+      // Format the date to local timezone
+      const formatToLocalDateTime = (date) => {
+        const year = date.getFullYear();
+        const month = String(date.getMonth() + 1).padStart(2, '0');
+        const day = String(date.getDate()).padStart(2, '0');
+        const hours = String(date.getHours()).padStart(2, '0');
+        const minutes = String(date.getMinutes()).padStart(2, '0');
+        
+        return `${year}-${month}-${day}T${hours}:${minutes}`;
+      };
+
       setEditedEvent({
         title: event.title,
-        start: new Date(event.start).toISOString().slice(0, 16),
-        end: new Date(event.end).toISOString().slice(0, 16)
+        start: formatToLocalDateTime(startDate),
+        end: formatToLocalDateTime(endDate)
       });
     }
   }, [event]);
 
   const handleSubmit = (e) => {
     e.preventDefault();
+    
+    // Create new Date objects in local timezone
+    const startDate = new Date(editedEvent.start);
+    const endDate = new Date(editedEvent.end);
+
     onSave({
       ...event,
-      ...editedEvent,
-      start: new Date(editedEvent.start),
-      end: new Date(editedEvent.end),
+      title: editedEvent.title,
+      start: startDate,
+      end: endDate,
     });
     onClose();
   };
@@ -40,7 +60,7 @@ const EventEditModal = ({ isOpen, onClose, event, onSave, onDelete }) => {
     <div className="modal-overlay">
       <div className="modal-content">
         <div className="top-container">
-        <h2>Edit Event</h2>
+          <h2>Edit Event</h2>
           <button onClick={handleDelete} className="delete-button">
             Delete Event
           </button>
