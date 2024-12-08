@@ -197,6 +197,8 @@ app.post('/uploadPdf', upload.single('pdfFile'), async (req, res) => {
     if (!req.file) {
       return res.status(400).send('No file uploaded.');
     }
+
+    // Check if file is a PDF
     if (path.extname(req.file.originalname).toLowerCase() !== '.pdf') {
       return res.status(400).send('Only PDF files are allowed.');
     }
@@ -207,6 +209,7 @@ app.post('/uploadPdf', upload.single('pdfFile'), async (req, res) => {
     if (!userId) {
       return res.status(400).send('User ID is required.');
     }
+
     // Find user by ID
     const user = await User.findById(userId);
     if (!user) {
@@ -216,7 +219,6 @@ app.post('/uploadPdf', upload.single('pdfFile'), async (req, res) => {
     // Delete existing PDF file if it exists
     if (user.pdfFileUrl) {
       const existingFilePath = path.join(__dirname, user.pdfFileUrl);
-      await fs.remove(existingFilePath);
       try {
         await fs.remove(existingFilePath);
       } catch (removeError) {
@@ -227,15 +229,16 @@ app.post('/uploadPdf', upload.single('pdfFile'), async (req, res) => {
 
     // Set new PDF URL and update user
     const pdfUrl = `/uploads/${req.file.filename}`;
-  
     const updatedUser = await User.findByIdAndUpdate(
       userId,
       { pdfFileUrl: pdfUrl },
       { new: true }
     );
+
     if (!updatedUser) {
       return res.status(500).send('Error updating user with new PDF URL.');
     }
+
     // Send successful response
     res.json({ message: "File uploaded successfully.", user: updatedUser });
   } catch (error) {

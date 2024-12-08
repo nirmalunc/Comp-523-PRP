@@ -31,8 +31,19 @@ const Profile = () => {
       toast.success('File uploaded successfully!');
     })
     .catch(error => {
-      console.error('Upload error:', error);
-      toast.error('Upload error: ' + error.response.data);
+      if (error.response) {
+        // Server responded with a status other than 200 range
+        console.error('Upload error:', error.response.data);
+        toast.error(`Upload error: ${error.response.data.message || 'Unknown error'}`);
+      } else if (error.request) {
+        // No response was received from the server
+        console.error('No response received:', error.request);
+        toast.error('Upload error: No response received from the server');
+      } else {
+        // Error setting up the request
+        console.error('Error setting up upload request:', error.message);
+        toast.error('Upload error: ' + error.message);
+      }
     });
   };
 
