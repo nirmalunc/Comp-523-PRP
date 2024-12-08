@@ -188,8 +188,8 @@ app.post('/saveSchedulingData', async (req, res) => {
   }
 });
 
-const path = require('path');
-const fs = require('fs-extra'); // Ensure fs-extra is imported if using it
+//const path = require('path');
+//const fs = require('fs-extra'); // Ensure fs-extra is imported if using it
 
 app.post('/uploadPdf', upload.single('pdfFile'), async (req, res) => {
   try {

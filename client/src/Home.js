@@ -142,7 +142,7 @@ const Home = () => {
             />
               <label htmlFor="task1">Register or waive exam</label>
             </li>
-            <li className="task-item" style={{ textDecoration: isTask2Checked ? 'line-through' : 'none' }}>>
+            <li className="task-item" style={{ textDecoration: isTask2Checked ? 'line-through' : 'none' }}>
               <input 
               type="checkbox" 
               id="task2" 
